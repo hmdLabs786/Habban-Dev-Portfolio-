@@ -9,10 +9,65 @@ export const Contact: React.FC = () => {
     { name: 'Facebook', icon: <Facebook size={24} />, href: 'https://www.facebook.com/habban.madani', color: 'hover:text-blue-600' },
   ];
 
+  const [formData, setFormData] = React.useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [popupMessage, setPopupMessage] = React.useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setPopupMessage('Thank you! Your message has been sent successfully.');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      setStatus('error');
+      setPopupMessage('Oops! Something went wrong. Please try again later.');
+    }
+  };
+
   return (
-    <section id="contact" className="py-24">
+    <section id="contact" className="py-24 relative">
+      {/* Success/Error Popup */}
+      {status !== 'idle' && status !== 'loading' && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        >
+          <div className="glass p-8 rounded-3xl border-white/10 max-w-sm w-full text-center shadow-2xl">
+            <div className={`w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center ${status === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+              {status === 'success' ? (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+              ) : (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              )}
+            </div>
+            <h4 className="text-xl font-bold mb-2">{status === 'success' ? 'Success!' : 'Error'}</h4>
+            <p className="text-slate-400 mb-8">{popupMessage}</p>
+            <button 
+              onClick={() => setStatus('idle')}
+              className="w-full py-3 bg-neon-blue text-luxury-black font-bold rounded-xl hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all"
+            >
+              Close
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       <div className="container mx-auto px-6">
-        <div className="flex flex-col lg:flex-row gap-16 items-center">
+        <div className="flex flex-col lg:flex-row gap-16 items-start">
           <motion.div
             className="flex-1"
             initial={{ opacity: 0, x: -50 }}
@@ -67,29 +122,73 @@ export const Contact: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
           >
-            <div className="glass p-10 rounded-3xl border-white/5 space-y-8 relative overflow-hidden">
-              <h3 className="text-2xl font-bold text-white mb-6">Connect with me</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="glass p-8 md:p-10 rounded-3xl border-white/5 relative overflow-hidden">
+              <h3 className="text-2xl font-bold text-white mb-8">Send a Message</h3>
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-400 font-mono ml-1">Name</label>
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="Your Name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-neon-blue focus:bg-white/10 transition-all"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-400 font-mono ml-1">Email</label>
+                  <input 
+                    required
+                    type="email" 
+                    placeholder="your@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-neon-blue focus:bg-white/10 transition-all"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-slate-400 font-mono ml-1">Message</label>
+                  <textarea 
+                    required
+                    rows={4}
+                    placeholder="Tell me about your project..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-neon-blue focus:bg-white/10 transition-all resize-none"
+                  />
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className="w-full py-5 bg-neon-blue text-luxury-black font-bold rounded-2xl hover:shadow-[0_0_30px_rgba(56,189,248,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {status === 'loading' ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
+                      Sending...
+                    </>
+                  ) : 'Send Message'}
+                </button>
+              </form>
+
+              <div className="mt-10 pt-8 border-t border-white/5 flex justify-center gap-8">
                 {socials.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex flex-col items-center gap-4 p-6 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:scale-105 hover:bg-white/10 group ${social.color}`}
+                    className={`text-slate-500 transition-all duration-300 hover:scale-110 ${social.color}`}
+                    title={social.name}
                   >
-                    <div className="text-neon-blue group-hover:scale-110 transition-transform">
-                      {social.icon}
-                    </div>
-                    <span className="font-bold">{social.name}</span>
+                    {social.icon}
                   </a>
                 ))}
-              </div>
-              
-              <div className="p-6 rounded-2xl bg-neon-blue/5 border border-neon-blue/20">
-                <p className="text-slate-300 text-center italic">
-                  "Let's build something amazing together."
-                </p>
               </div>
 
               {/* Decorative glow */}

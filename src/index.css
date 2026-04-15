@@ -13,7 +13,10 @@
 
 @layer base {
   body {
-    @apply bg-luxury-black text-slate-200 selection:bg-neon-blue selection:text-luxury-black overflow-x-hidden font-sans;
+    @apply bg-luxury-black text-slate-200 selection:bg-neon-blue selection:text-luxury-black overflow-x-hidden font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -24,10 +27,20 @@
 @layer utilities {
   .glass {
     @apply backdrop-blur-md bg-white/5 border border-white/10;
+    transform: translateZ(0); /* Force hardware acceleration */
   }
   
   .glass-dark {
     @apply backdrop-blur-xl bg-black/40 border border-white/5;
+    transform: translateZ(0);
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
   }
 
   .text-glow {

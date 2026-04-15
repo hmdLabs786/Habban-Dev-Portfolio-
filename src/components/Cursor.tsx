@@ -1,29 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import React, { useEffect } from 'react';
+import { motion, useMotionValue, useSpring } from 'motion/react';
 
 export const Cursor: React.FC = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 25, stiffness: 250, mass: 0.5 };
+  const glowConfig = { damping: 30, stiffness: 150, mass: 1 };
+
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
+  
+  const glowX = useSpring(mouseX, glowConfig);
+  const glowY = useSpring(mouseY, glowConfig);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
   return (
     <>
       <motion.div
         className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-neon-blue pointer-events-none z-[9999] hidden md:block"
-        animate={{ x: mousePosition.x - 16, y: mousePosition.y - 16 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 250, mass: 0.5 }}
+        style={{ 
+          x: cursorX, 
+          y: cursorY,
+          translateX: '-50%',
+          translateY: '-50%'
+        }}
       />
       <motion.div
         className="fixed top-0 left-0 w-64 h-64 bg-neon-blue/10 rounded-full blur-3xl pointer-events-none z-[9998] hidden md:block"
-        animate={{ x: mousePosition.x - 128, y: mousePosition.y - 128 }}
-        transition={{ type: 'spring', damping: 30, stiffness: 150, mass: 1 }}
+        style={{ 
+          x: glowX, 
+          y: glowY,
+          translateX: '-50%',
+          translateY: '-50%'
+        }}
       />
     </>
   );

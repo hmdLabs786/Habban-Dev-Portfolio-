@@ -20,7 +20,7 @@ export default function App() {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 2,
+      touchMultiplier: 1.5,
       infinite: false,
     });
 
@@ -31,8 +31,21 @@ export default function App() {
 
     requestAnimationFrame(raf);
 
+    // Optimize performance by disabling hover effects during scroll
+    let isScrolling: NodeJS.Timeout;
+    const handleScroll = () => {
+      document.body.style.pointerEvents = 'none';
+      clearTimeout(isScrolling);
+      isScrolling = setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+      }, 150);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       lenis.destroy();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 

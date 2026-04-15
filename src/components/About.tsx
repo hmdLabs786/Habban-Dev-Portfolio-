@@ -5,18 +5,18 @@ export const About: React.FC = () => {
   return (
     <section id="about" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center gap-16">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           <motion.div
-            className="flex-1"
+            className="w-full lg:flex-1 order-2 lg:order-1"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 md:mb-8 text-center lg:text-left">
               About <span className="text-neon-blue">Me</span>
             </h2>
-            <div className="space-y-6 text-lg text-slate-400 leading-relaxed">
+            <div className="space-y-6 text-base md:text-lg text-slate-400 leading-relaxed text-center lg:text-left">
               <p>
                 I am a passionate Full Stack Developer with a deep interest in AI and Automation. 
                 My journey in tech is driven by a desire to create intelligent, efficient, and 
@@ -41,7 +41,7 @@ export const About: React.FC = () => {
           </motion.div>
 
           <motion.div
-            className="flex-1 relative"
+            className="w-full lg:flex-1 relative order-1 lg:order-2 max-w-md lg:max-w-none"
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}

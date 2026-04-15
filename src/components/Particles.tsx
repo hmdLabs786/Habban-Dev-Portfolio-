@@ -77,22 +77,40 @@ export const Particles: React.FC = () => {
     }
 
     const init = () => {
+      const isMobile = window.innerWidth < 768;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       particles = [];
       
-      // Layered star distribution
-      for (let i = 0; i < 150; i++) particles.push(new Particle(0));
-      for (let i = 0; i < 80; i++) particles.push(new Particle(1));
-      for (let i = 0; i < 30; i++) particles.push(new Particle(2));
+      // Reduced particle count for mobile to improve performance
+      const bgCount = isMobile ? 60 : 150;
+      const midCount = isMobile ? 30 : 80;
+      const fgCount = isMobile ? 10 : 30;
+      
+      for (let i = 0; i < bgCount; i++) particles.push(new Particle(0));
+      for (let i = 0; i < midCount; i++) particles.push(new Particle(1));
+      for (let i = 0; i < fgCount; i++) particles.push(new Particle(2));
     };
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
+      
+      // Use a simpler drawing method for better performance
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.update();
-        p.draw();
-      });
+        
+        ctx.fillStyle = p.color + p.opacity * 0.6 + ')';
+        
+        // For very small particles, fillRect is much faster than arc
+        if (p.size < 1) {
+          ctx.fillRect(p.x, p.y, p.size * 2, p.size * 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
       animationFrameId = requestAnimationFrame(animate);
     };
 

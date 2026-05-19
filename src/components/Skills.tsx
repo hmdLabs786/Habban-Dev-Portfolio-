@@ -30,6 +30,15 @@ const skillCategories = [
     ],
   },
   {
+    title: 'App Development',
+    skills: [
+      { name: 'Flutter', level: 90 },
+      { name: 'Dart', level: 85 },
+      { name: 'Firebase', level: 90 },
+      { name: 'Gemini/OpenAI API', level: 95 },
+    ],
+  },
+  {
     title: 'Tools',
     skills: [
       { name: 'Git', level: 90 },
@@ -56,7 +65,7 @@ export const Skills: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 md:gap-8">
           {skillCategories.map((category, idx) => (
             <motion.div
               key={category.title}
